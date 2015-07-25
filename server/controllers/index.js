@@ -7,20 +7,29 @@ var bodyParser = require("body-parser");
 
 module.exports = {
   messages: {
-    get: function (req, res) {}, // a function which handles a get request for all messages
-    post: function (req, res) {
-      // db.connection.query("insert into `messages` (`userid`, `message`, `room`) value (2, '" + req.body.message +
-      //    "', '" + req.body.roomname + "')", 
-      //   function(err, results) {
-      //     if (err) {console.log(err); } 
-      //     else {console.log(results); } 
-      //   });
+    get: function (req, res) {
+      db.connection.query("select * from messages", function(err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.send(JSON.stringify(result));
+        }
+      });
 
-      db.connection.query("insert into `messages` (message) value ('red the blood of angry men')",
-        function(err, results) {
-          if (err) {console.log(err);}
-          else {console.log("callback from insert into messages");}
-        });
+    }, // a function which handles a get request for all messages
+    post: function (req, res) {
+      db.connection.query("select id from users where username = ?", [req.body.username], function(err, results) {
+        if (err) {
+          console.log(err);
+        } else {
+          db.connection.query("insert into `messages` (`userid`, `message`, `room`) value (?, ?, ?)", 
+            [results[0], req.body.message, req.body.roomname],
+            function(err, results) {
+              if (err) {console.log(err); } 
+              else {} 
+          });
+        }
+      });
 
     res.sendStatus(201).send();  
     } // a function which handles posting a message to the database
@@ -30,10 +39,10 @@ module.exports = {
     // Ditto as above
     get: function (req, res) {},
     post: function (req, res) {
-      db.connection.query("insert into `users` (username) value ('Marius')", 
+      db.connection.query("insert into `users` (username) value ( ? )", [req.body.username], 
         function(err, results) {
           if (err) {console.log(err); } 
-          else {console.log("callback from insert into users"); } 
+          else {} 
         });
 
       res.sendStatus(201).send();

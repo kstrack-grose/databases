@@ -4,9 +4,9 @@ USE chat;
 
 CREATE TABLE messages (
   id int(5) auto_increment,
-  -- userid int(3),
+  userid int(3),
   message varchar(255),
-  -- room varchar(30),
+  room varchar(30),
   primary key (id)
 );
 
@@ -16,12 +16,6 @@ CREATE TABLE users (
   username varchar(30),
   primary key (id)
 );
-
--- CREATE TABLE tweets (
---   id int(5) auto_increment,
---   text varchar(200),
---   primary key (id)
--- );
 
 
 /*  Execute this file from the command line by typing:
