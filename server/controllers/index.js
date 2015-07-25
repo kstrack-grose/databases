@@ -8,19 +8,15 @@ var bodyParser = require("body-parser");
 module.exports = exports = {
   messages: {
     get: function (req, res) {
-      // db.sequelize.findAll({
-      //   where: {
-      //     userid: 
-      //   }
-      // });
+      db.Message.findAll({
+        include : [db.User]
+      }).then(function(results) {
 
+        var messages = results.map(function(result) {
+          return result.dataValues;
+        });
 
-      db.connection.query("select * from messages, users where messages.userid = users.id", function(err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          res.send(JSON.stringify(result));
-        }
+        res.send(JSON.stringify(messages));
       });
 
     }, // a function which handles a get request for all messages
@@ -32,50 +28,29 @@ module.exports = exports = {
         }
       }).then(function(users) {
         if (users.length === 0) {
-          exports.users.post(req, res, true);
+          exports.users.post(req, res, true, function(user) {
+            console.log('INSIDE CALLBACK ------------------------>', user);
+            var message = db.Message.build({
+              UserId: user.dataValues.id,
+              message: req.body.text,
+              room: req.body.roomname
+            });
+            message.save().then(function() {
+              console.log('message has been saved');
+            });
+
+          });
         } else {
           var message = db.Message.build({
             UserId: users[0].id,
-            message: req.body.message,
-            room: req.body.room
+            message: req.body.text,
+            room: req.body.roomname
+          });
+          message.save().then(function() {
+            console.log('message has been saved');
           });
         }
       });
-
-
-
-      // db.connection.query("select id from users where username = ?", [req.body.username], function(err, results) {
-      //   if (err) {
-      //     console.log(err);
-      //   } else {
-      //     if (results.length === 0) {
-      //       exports.users.post(req, res, true);
-
-      //       db.connection.query("select id from users where username = ?", [req.body.username], function(err, results) {
-      //         if (err) {
-      //           console.log(err);
-      //         } else {
-      //           db.connection.query("insert into `messages` (`userid`, `message`, `room`) value (?, ?, ?)", 
-      //             [results[0].id, req.body.text, req.body.roomname],
-      //             function(err, results) {
-      //               if (err) {console.log(err); } 
-      //               else {} 
-      //           });  
-      //         }
-      //       });
-      //     } else {
-      //       db.connection.query("insert into `messages` (`userid`, `message`, `room`) value (?, ?, ?)", 
-      //         [results[0].id, req.body.text, req.body.roomname],
-      //         function(err, results) {
-      //           if (err) {console.log(err); } 
-      //           else {} 
-      //       }); 
-      //     }
-      //   }
-      // });
-
-
-
 
     res.sendStatus(201).send();  
     }, // a function which handles posting a message to the database
@@ -87,14 +62,16 @@ module.exports = exports = {
   users: {
     // Ditto as above
     get: function (req, res) {},
-    post: function (req, res, status) {
-      console.log('--------------->', req.body.username);
+    post: function (req, res, status, callback) {
       var newUser = db.User.build({username: req.body.username});
-      newUser.save().then(
-        function(err, results) {
-          if (err) {console.log(err); } 
-          else {} 
-        });
+      newUser.save().then(function(err, results) {
+        if (err) { 
+          console.log('-------------------------> THERE HAS BEEN AN ERROR');
+          console.log(err); 
+        } 
+        console.log('RIGHT BEFORE CALLBACK ------------------------>', newUser);
+        callback(newUser); 
+      });
 
       if (!status) {
         res.sendStatus(201).send();

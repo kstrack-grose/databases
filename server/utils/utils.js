@@ -14,7 +14,6 @@ exports.sendResponse = function(response, data, statusCode){
 
 exports.collectData = function(request, callback){
   var data = "";
-  console.log('-------------> this function has run at all');
   request.on('data', function(chunk){
     data += chunk;
   });

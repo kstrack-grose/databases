@@ -27,10 +27,16 @@ exports.Message = exports.sequelize.define("Message", {
   room : Sequelize.STRING
 });
 
-exports.Message.belongsTo(exports.User, {constraints: false});
-exports.User.hasMany(exports.Message, {constraints: false});
+exports.Message.belongsTo(exports.User, {
+  constraints: false,
+  foreignKey: 'UserId'
+});
+exports.User.hasMany(exports.Message, {
+  constraints: false,
+  foreignKey: 'UserId'
+});
 
-exports.User.sync({force: true}).then(function() {
+exports.User.sync(/*{force: true}*/).then(function() {
   var newUser = exports.User.build({username: "Jean Valjean"});
   newUser.save().then(function() {
 
@@ -46,7 +52,7 @@ exports.User.sync({force: true}).then(function() {
   });
 });
 
-exports.Message.sync({force: true}).then(function() {
+exports.Message.sync(/*{force: true}*/).then(function() {
   console.log('we successfully synced the sequelized object.');
 });
 
