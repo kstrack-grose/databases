@@ -32,7 +32,11 @@ module.exports = {
       });
 
     res.sendStatus(201).send();  
-    } // a function which handles posting a message to the database
+    }, // a function which handles posting a message to the database
+    options: function(req, res) {
+      console.log("=================> got an options request");
+      res.sendStatus(200).send();
+    }
   },
 
   users: {

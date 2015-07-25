@@ -22,3 +22,21 @@ exports.collectData = function(request, callback){
     callback(JSON.parse(data));
   });
 };
+
+
+exports.CORS = function(req, res, next) {
+  console.log('------->cors');
+  res.header("access-control-allow-origin", "*");
+  res.header("access-control-allow-methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("access-control-allow-headers", "content-type, accept");
+
+  next();
+};
+
+exports.interceptOptions = function(req, res, next) {
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200).send();
+  } else {
+    next();
+  }
+};
