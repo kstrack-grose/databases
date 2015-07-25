@@ -25,7 +25,6 @@ exports.collectData = function(request, callback){
 
 
 exports.CORS = function(req, res, next) {
-  console.log('------->cors');
   res.header("access-control-allow-origin", "*");
   res.header("access-control-allow-methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("access-control-allow-headers", "content-type, accept");
@@ -39,4 +38,9 @@ exports.interceptOptions = function(req, res, next) {
   } else {
     next();
   }
+};
+
+exports.getInfo = function(req, res, next) {
+  console.log('METHOD: ', req.method)
+  next();
 };
