@@ -37,19 +37,7 @@ exports.User.hasMany(exports.Message, {
 });
 
 exports.User.sync(/*{force: true}*/).then(function() {
-  var newUser = exports.User.build({username: "Jean Valjean"});
-  newUser.save().then(function() {
-
-    /* This callback function is called once saving succeeds. */
-
-    // Retrieve objects from the database:
-    exports.User.findAll({ where: {username: "Jean Valjean"} }).then(function(usrs) {
-      // This function is called back with an array of matches.
-      for (var i = 0; i < usrs.length; i++) {
-        console.log(usrs[i].username + " exists");
-      }
-    });
-  });
+  console.log('successfully synced the users model');
 });
 
 exports.Message.sync(/*{force: true}*/).then(function() {

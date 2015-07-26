@@ -22,37 +22,22 @@ module.exports = exports = {
     }, // a function which handles a get request for all messages
     post: function (req, res) {
 
-      db.User.findAll({
+      db.User.findOrCreate({
         where: {
           username: req.body.username
         }
-      }).then(function(users) {
-        if (users.length === 0) {
-          exports.users.post(req, res, true, function(user) {
-            console.log('INSIDE CALLBACK ------------------------>', user);
-            var message = db.Message.build({
-              UserId: user.dataValues.id,
-              message: req.body.text,
-              room: req.body.roomname
-            });
-            message.save().then(function() {
-              console.log('message has been saved');
-            });
-
-          });
-        } else {
-          var message = db.Message.build({
-            UserId: users[0].id,
-            message: req.body.text,
-            room: req.body.roomname
-          });
-          message.save().then(function() {
-            console.log('message has been saved');
-          });
-        }
+      }).then(function(user) {
+        var message = db.Message.build({
+          UserId: user[0].dataValues.id,
+          message: req.body.text,
+          room: req.body.roomname
+        });
+        message.save().then(function() {
+          console.log('message has been saved');
+          res.sendStatus(201).send();
+        });
       });
-
-    res.sendStatus(201).send();  
+  
     }, // a function which handles posting a message to the database
     options: function(req, res) {
       res.sendStatus(200).send();
@@ -66,10 +51,8 @@ module.exports = exports = {
       var newUser = db.User.build({username: req.body.username});
       newUser.save().then(function(err, results) {
         if (err) { 
-          console.log('-------------------------> THERE HAS BEEN AN ERROR');
           console.log(err); 
         } 
-        console.log('RIGHT BEFORE CALLBACK ------------------------>', newUser);
         callback(newUser); 
       });
 
